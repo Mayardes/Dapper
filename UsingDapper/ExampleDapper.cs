@@ -1,3 +1,4 @@
+using System.Data;
 using Balta_Dapper.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
@@ -33,6 +34,10 @@ public class ExampleDapper
         var insertMany = InsertMany(connection);
         Console.WriteLine($"rows affected: {insertMany}");
 
+        Console.WriteLine("Executing stored procedure:");
+        var storedProcedure = ExecuteStoredProcedure(connection);
+        Console.WriteLine($"rows affected: {storedProcedure}");
+
     }
 
     private static int Inserting(SqlConnection sqlConnection)
@@ -61,5 +66,13 @@ public class ExampleDapper
         return sqlConnection.Execute(insertMany, new [] { 
             new {googleCloudy.Id, googleCloudy.Title, googleCloudy.Url, googleCloudy.Summary, googleCloudy.Order, googleCloudy.Description, googleCloudy.Featured}, 
             new {azureDevops.Id, azureDevops.Title, azureDevops.Url, azureDevops.Summary, azureDevops.Order, azureDevops.Description, azureDevops.Featured}});
+    }
+
+    private static int ExecuteStoredProcedure(SqlConnection sqlConnection)
+    {
+        var execute = "EXEC [spDeleteStudent] @StudentId";
+        var parameter = new { StudentId = new Guid("be022541-1e54-494c-bf94-40a71e9f0b36") };
+
+        return sqlConnection.Execute(execute, parameter);
     }
 }
