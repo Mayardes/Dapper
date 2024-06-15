@@ -28,6 +28,11 @@ public class ExampleDapper
 
         var updating = Updating(connection, description, id);
         Console.WriteLine($"rows affected: {updating}"); 
+
+        Console.WriteLine("Executing inserting many data:");
+        var insertMany = InsertMany(connection);
+        Console.WriteLine($"rows affected: {insertMany}");
+
     }
 
     private static int Inserting(SqlConnection sqlConnection)
@@ -44,5 +49,17 @@ public class ExampleDapper
         string update = "UPDATE [Category] SET Description = @Description WHERE Id = @Id";
 
         return sqlConnection.Execute(update, new {Description = description, Id = id});
+    }
+
+    private static int InsertMany(SqlConnection sqlConnection)
+    {
+        string insertMany = "INSERT INTO [Category] VALUES (@Id, @Title, @Url, @Summary, @Order, @Description, @Featured)";
+
+        var googleCloudy = new Category(Id: Guid.NewGuid(), Title: "Google Cloud", Url: "https://cloud.google.com/", Summary:"Google Storage", Order: 1, Description: "Google Drive, part of Google Workspace, lets you securely store, intelligently organize and collaborate on files and folders from anywhere, on any device", Featured: false);
+        var azureDevops = new Category(Id: Guid.NewGuid(), Title: "Azure Devops", Url: "https://azure.microsoft.com/", Summary: "Azure Devops", Order: 1, Description: "Azure DevOps is an end-to-end software development platform", Featured: true);
+
+        return sqlConnection.Execute(insertMany, new [] { 
+            new {googleCloudy.Id, googleCloudy.Title, googleCloudy.Url, googleCloudy.Summary, googleCloudy.Order, googleCloudy.Description, googleCloudy.Featured}, 
+            new {azureDevops.Id, azureDevops.Title, azureDevops.Url, azureDevops.Summary, azureDevops.Order, azureDevops.Description, azureDevops.Featured}});
     }
 }
