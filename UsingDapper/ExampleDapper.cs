@@ -45,6 +45,9 @@ public class ExampleDapper
         Console.WriteLine("Executing command using Executing Escalar for returns Id:");
         ExecuteScalar(connection);
 
+        Console.WriteLine("Executing view for reading Course:");
+        ExecuteReadView(connection);
+
     }
 
     private static int Inserting(SqlConnection sqlConnection)
@@ -105,5 +108,16 @@ public class ExampleDapper
         var id = connection.ExecuteScalar<Guid>(execute, new { mega.Id, mega.Title, mega.Url, mega.Summary, mega.Order, mega.Description, mega.Featured});
 
         Console.WriteLine($"The category inserted was: {id}");
+    }
+
+    private static void ExecuteReadView(SqlConnection connection)
+    {
+        string execute = "SELECT * FROM [vwCourses]";
+        var courses = connection.Query(execute);
+
+        foreach(var course in courses)
+        {
+            Console.WriteLine($"Id: {course.Id}, Title: {course.Title}");
+        }
     }
 }
