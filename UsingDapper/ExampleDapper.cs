@@ -1,4 +1,5 @@
 using System.Data;
+using System.Net.NetworkInformation;
 using Balta_Dapper.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
@@ -38,6 +39,9 @@ public class ExampleDapper
         var storedProcedure = ExecuteStoredProcedure(connection);
         Console.WriteLine($"rows affected: {storedProcedure}");
 
+        Console.WriteLine("Executing stored procedure:");
+        ExecuteReadingStoredProcedure(connection);
+
     }
 
     private static int Inserting(SqlConnection sqlConnection)
@@ -74,5 +78,19 @@ public class ExampleDapper
         var parameter = new { StudentId = new Guid("be022541-1e54-494c-bf94-40a71e9f0b36") };
 
         return sqlConnection.Execute(execute, parameter);
+    }
+
+    private static void ExecuteReadingStoredProcedure(SqlConnection connection)
+    {
+        string execute = "EXEC [spGetCoursesByCategory] @CategoryId";
+        var parameter = new { CategoryId = new Guid("af3407aa-11ae-4621-a2ef-2028b85507c4")};
+
+        var categories = connection.Query(execute, parameter);
+
+        foreach(var category in categories)
+        {
+            Console.WriteLine($"Id: {category.Id}, Title {category.Title}");
+        }
+
     }
 }
