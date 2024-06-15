@@ -42,6 +42,9 @@ public class ExampleDapper
         Console.WriteLine("Executing stored procedure:");
         ExecuteReadingStoredProcedure(connection);
 
+        Console.WriteLine("Executing command using Executing Escalar for returns Id:");
+        ExecuteScalar(connection);
+
     }
 
     private static int Inserting(SqlConnection sqlConnection)
@@ -92,5 +95,15 @@ public class ExampleDapper
             Console.WriteLine($"Id: {category.Id}, Title {category.Title}");
         }
 
+    }
+
+    private static void ExecuteScalar(SqlConnection connection)
+    {
+        string execute = "INSERT INTO [Category] OUTPUT inserted.[Id] VALUES (NEWID(), @Title, @Url, @Summary, @Order, @Description, @Featured)";
+        var mega = new Category(null, Title: "Mega", Url: "https://mega.io/", Summary: "Cloudy service", 0, "Service cloudy to store", Featured: false);
+
+        var id = connection.ExecuteScalar<Guid>(execute, new { mega.Id, mega.Title, mega.Url, mega.Summary, mega.Order, mega.Description, mega.Featured});
+
+        Console.WriteLine($"The category inserted was: {id}");
     }
 }
