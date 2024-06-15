@@ -1,5 +1,6 @@
 using System.Data;
 using System.Net.NetworkInformation;
+using Azure.Core;
 using Balta_Dapper.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
@@ -47,6 +48,9 @@ public class ExampleDapper
 
         Console.WriteLine("Executing view for reading Course:");
         ExecuteReadView(connection);
+
+        Console.WriteLine("Executing relationships between [CareerItem] and [Course]:");
+        ExecutingRelationshipOneToOne(connection);
 
     }
 
@@ -118,6 +122,21 @@ public class ExampleDapper
         foreach(var course in courses)
         {
             Console.WriteLine($"Id: {course.Id}, Title: {course.Title}");
+        }
+    }
+
+    private static void ExecutingRelationshipOneToOne(SqlConnection connection)
+    {
+        string execute = "SELECT * FROM [CareerItem] INNER JOIN [Course] ON [CareerItem].[CourseId] = [Course].[Id]";
+
+        var result = connection.Query<CareerItem, Course, CareerItem>(execute, (carrerItem, course) => {
+            carrerItem.Course = course;
+            return carrerItem;
+        }, splitOn: "Id");
+
+        foreach(var carrerItem in result)
+        {
+            Console.WriteLine($"Duration: {carrerItem.Course.DurationInMinutes}");
         }
     }
 }
