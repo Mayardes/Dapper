@@ -1,12 +1,3 @@
 namespace Balta_Dapper.Models;
 
-public class Category
-{
-    public Guid Id { get; set; }
-    public string Title { get; set; }
-    public string Url { get; set; }
-    public string Summary { get; set; }
-    public int Order { get; set; }
-    public string Description { get; set; }
-    public bool Featured { get; set; }
-}
+public record Category(Guid Id, string Title, string Url, string Summary, int Order, string Description, bool Featured);
